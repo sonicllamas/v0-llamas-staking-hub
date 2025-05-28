@@ -1,45 +1,71 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
+import { ArrowRight, Search } from "lucide-react"
 import { BridgeWidget } from "./bridge-widget"
 
 interface FeatureCardProps {
   title: string
   description: string
   icon: string
+  href?: string
   isBridge?: boolean
 }
 
-export function FeatureCard({ title, description, icon, isBridge = false }: FeatureCardProps) {
-  const [isWidgetOpen, setIsWidgetOpen] = useState(false)
+export function FeatureCard({ title, description, icon, href, isBridge = false }: FeatureCardProps) {
+  const [isBridgeOpen, setIsBridgeOpen] = useState(false)
 
-  const openWidget = () => {
-    if (isBridge) {
-      setIsWidgetOpen(true)
-    }
+  const handleBridgeClick = () => {
+    setIsBridgeOpen(true)
   }
 
-  const closeWidget = () => setIsWidgetOpen(false)
+  const handleBridgeClose = () => {
+    setIsBridgeOpen(false)
+  }
+
+  const renderIcon = () => {
+    if (icon === "Search") {
+      return <Search className="w-6 h-6 text-green-400" />
+    }
+    return <span className="text-2xl">{icon}</span>
+  }
+
+  if (isBridge) {
+    return (
+      <>
+        <div
+          className="bg-[#0d2416] border border-[#1a3726] rounded-lg p-6 hover:border-[#00ffaa]/30 transition-all duration-300 cursor-pointer"
+          onClick={handleBridgeClick}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-[#143621] p-3 rounded-lg">{renderIcon()}</div>
+              <h3 className="text-xl font-semibold text-white">{title}</h3>
+            </div>
+            <ArrowRight className="w-5 h-5 text-green-400" />
+          </div>
+          <p className="text-gray-300">{description}</p>
+        </div>
+
+        {isBridgeOpen && <BridgeWidget isOpen={isBridgeOpen} onClose={handleBridgeClose} />}
+      </>
+    )
+  }
 
   return (
-    <>
-      <div
-        className={`bg-[#0d2416] p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow ${
-          isBridge ? "cursor-pointer" : ""
-        }`}
-        onClick={openWidget}
-      >
-        <div className="text-4xl mb-4">{icon}</div>
-        <h3 className="text-white text-xl font-bold mb-2">{title}</h3>
-        <p className="text-green-100">{description}</p>
-        {isBridge && (
-          <div className="mt-4">
-            <span className="text-green-400 text-sm">Powered by deBridge</span>
-          </div>
-        )}
+    <Link
+      href={href || "#"}
+      className="bg-[#0d2416] border border-[#1a3726] rounded-lg p-6 hover:border-[#00ffaa]/30 transition-all duration-300"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-[#143621] p-3 rounded-lg">{renderIcon()}</div>
+          <h3 className="text-xl font-semibold text-white">{title}</h3>
+        </div>
+        <ArrowRight className="w-5 h-5 text-green-400" />
       </div>
-
-      {isBridge && <BridgeWidget isOpen={isWidgetOpen} onClose={closeWidget} />}
-    </>
+      <p className="text-gray-300">{description}</p>
+    </Link>
   )
 }

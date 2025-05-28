@@ -6,6 +6,10 @@ import { fetchCollectionNFTs } from "@/lib/nft-service"
 import type { NFT } from "@/types/nft"
 import { NFTFilters } from "./nft-collection/nft-filters"
 import { Loading } from "./loading"
+import { NFTGrid } from "./nft-collection/nft-grid"
+import { Card } from "@/components/ui/card"
+import { AlertCircle } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export function CollectionBrowser() {
   const params = useParams()
@@ -48,21 +52,21 @@ export function CollectionBrowser() {
 
   if (error) {
     return (
-      
-        
-          {error}
-        
-      
+      <Alert variant="destructive" className="mb-4">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     )
   }
 
   return (
-    
-      
+    <div className="space-y-6">
+      <Card className="p-4">
         <NFTFilters nfts={nfts} onFilterChange={handleFilterChange} />
-      
-      \
-        <NFTGrid nfts=filteredNfts/>
-      
-    
+      </Card>
+      <div className="mt-6">
+        <NFTGrid nfts={filteredNfts} />
+      </div>
+    </div>
   )
+}

@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Dialog } from "@headlessui/react"
 import { X, Check, AlertCircle, Loader2 } from "lucide-react"
 import type { NFT } from "@/types/nft"
 import { approveNFT, checkNFTApproval, stakeNFTs } from "@/lib/nft-service"
 import { useWallet } from "@/context/wallet-context"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 interface StakeNFTsModalProps {
   isOpen: boolean
@@ -156,19 +156,34 @@ export function StakeNFTsModal({ isOpen, onClose, nfts, stakingContractAddress =
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="mx-auto max-w-lg w-full rounded-xl bg-white p-6">
-          <div className="flex justify-between items-center mb-4">
-            <Dialog.Title className="text-xl font-bold">
+        <DialogContent
+          className="mx-auto max-w-lg w-full rounded-xl bg-white p-6"
+          aria-describedby="stake-modal-description"
+        >
+          <DialogHeader>
+            <DialogTitle>
               {step === "check" && "Checking NFT Approvals"}
               {step === "approve" && "Approve NFTs for Staking"}
               {step === "stake" && "Stake NFTs"}
               {step === "success" && "Staking Successful"}
               {step === "error" && "Staking Failed"}
-            </Dialog.Title>
-            <button onClick={handleClose} className="text-gray-500 hover:text-gray-700" disabled={isProcessing}>
-              <X size={20} />
-            </button>
-          </div>
+            </DialogTitle>
+            <DialogDescription id="stake-modal-description">
+              {step === "check" && "Checking approval status for your selected NFTs before staking."}
+              {step === "approve" && "Approve your NFTs for staking to the selected contract."}
+              {step === "stake" && "Stake your approved NFTs to start earning rewards."}
+              {step === "success" && "Your NFTs have been successfully staked and are now earning rewards."}
+              {step === "error" && "There was an issue with the staking process. Please try again."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <button
+            onClick={handleClose}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            disabled={isProcessing}
+          >
+            <X size={20} />
+          </button>
 
           <div className="mb-6">
             {step === "check" && (
@@ -360,7 +375,7 @@ export function StakeNFTsModal({ isOpen, onClose, nfts, stakingContractAddress =
               </button>
             )}
           </div>
-        </Dialog.Panel>
+        </DialogContent>
       </div>
     </Dialog>
   )

@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useWallet } from "@/context/wallet-context"
-import { WalletRequiredCard } from "@/components/create-staking/wallet-required-card"
 import { NetworkRequiredCard } from "@/components/create-staking/network-required-card"
-import { Loading } from "@/components/loading"
 import { ContractStats } from "./contract-stats"
 import { StakedNFTs } from "./staked-nfts"
 import { ContractActions } from "./contract-actions"
@@ -12,6 +10,7 @@ import { ContractSettings } from "./contract-settings"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { ContractLoadingError, NetworkError, WalletError } from "@/components/error-states"
 
 interface ContractDetailsProps {
   address: string
@@ -21,11 +20,16 @@ export function ContractDetails({ address }: ContractDetailsProps) {
   const { isConnected, chainId } = useWallet()
   const [loading, setLoading] = useState(true)
   const [contract, setContract] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isNetworkError, setIsNetworkError] = useState(false)
 
   useEffect(() => {
     const loadContract = async () => {
       if (isConnected && chainId === 146) {
         setLoading(true)
+        setError(null)
+        setIsNetworkError(false)
+
         try {
           // Mock data for demonstration
           await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -44,8 +48,13 @@ export function ContractDetails({ address }: ContractDetailsProps) {
             rewardInterval: "86400",
             stakingType: "flexible",
           })
-        } catch (error) {
-          console.error("Failed to load contract:", error)
+        } catch (err: any) {
+          console.error("Failed to load contract:", err)
+          if (err.message?.includes("network") || err.name === "NetworkError" || !navigator.onLine) {
+            setIsNetworkError(true)
+          } else {
+            setError("Failed to load contract details")
+          }
         } finally {
           setLoading(false)
         }
@@ -55,9 +64,37 @@ export function ContractDetails({ address }: ContractDetailsProps) {
     loadContract()
   }, [isConnected, chainId, address])
 
+  const retryLoading = () => {
+    if (isConnected && chainId === 146) {
+      setLoading(true)
+      setError(null)
+      setIsNetworkError(false)
+
+      // Simulate loading contract data again
+      setTimeout(() => {
+        setContract({
+          address,
+          name: "Llama Staking",
+          symbol: "LLSTK",
+          nftCollection: "0xabcdef1234567890abcdef1234567890abcdef12",
+          rewardToken: "0x9876543210fedcba9876543210fedcba98765432",
+          stakedCount: 42,
+          totalRewards: "1,250 SLL",
+          createdAt: "2025-05-15T12:00:00Z",
+          owner: "0x1234567890123456789012345678901234567890",
+          isPaused: false,
+          rewardRate: "10",
+          rewardInterval: "86400",
+          stakingType: "flexible",
+        })
+        setLoading(false)
+      }, 1000)
+    }
+  }
+
   // Check if user is connected to wallet
   if (!isConnected) {
-    return <WalletRequiredCard />
+    return <WalletError />
   }
 
   // Check if user is on Sonic Mainnet
@@ -66,23 +103,22 @@ export function ContractDetails({ address }: ContractDetailsProps) {
   }
 
   if (loading) {
-    return <Loading />
-  }
-
-  if (!contract) {
     return (
-      <div className="bg-[#0d2416] rounded-xl p-8 text-center">
-        <h2 className="text-white text-2xl font-bold mb-4">Contract Not Found</h2>
-        <p className="text-green-100 mb-6">The requested staking contract could not be found.</p>
-        <Link
-          href="/my-contracts"
-          className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-full font-bold transition-colors inline-flex items-center gap-2"
-        >
-          <ArrowLeft size={20} />
-          Back to My Contracts
-        </Link>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p className="text-white">Loading contract details...</p>
+        </div>
       </div>
     )
+  }
+
+  if (isNetworkError) {
+    return <NetworkError onRetry={retryLoading} />
+  }
+
+  if (error || !contract) {
+    return <ContractLoadingError onRetry={retryLoading} contractAddress={address} />
   }
 
   return (

@@ -14,10 +14,10 @@ export function BridgeButton() {
     <>
       <button
         onClick={openWidget}
-        className="flex items-center gap-2 bg-[#0d2416] px-3 py-2 rounded-lg hover:bg-[#143621] transition-colors"
+        className="flex items-center justify-center gap-2 bg-[#143621] hover:bg-[#1a4528] px-4 py-3 rounded-md transition-colors w-full"
       >
-        <ArrowRightLeft size={16} className="text-white" />
-        <span className="text-white text-sm font-medium hidden md:inline">Llamas Bridge</span>
+        <ArrowRightLeft size={18} className="text-[#00ffaa]" />
+        <span className="text-white font-medium">Bridge Now</span>
       </button>
 
       <BridgeWidget isOpen={isWidgetOpen} onClose={closeWidget} />

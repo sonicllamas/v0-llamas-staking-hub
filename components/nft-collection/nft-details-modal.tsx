@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import { X, ExternalLink, CheckCircle, Tag, Play, Pause, BarChart3, History } from "lucide-react"
 import type { NFTItem, NFTAttribute } from "@/types/nft"
 import { NFTRarityCalculator } from "./nft-rarity-calculator"
 import { NFTTransactionHistory } from "./nft-transaction-history"
 import { fetchCollectionTraits } from "@/lib/nft-service"
+import { ProgressiveImage } from "@/components/progressive-image"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 interface NFTDetailsModalProps {
   isOpen: boolean
@@ -106,8 +107,18 @@ export function NFTDetailsModal({ isOpen, onClose, nft, isSelected, onToggleSele
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
-      <div className="bg-[#0d2416] rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent
+        className="max-w-4xl max-h-[90vh] overflow-hidden bg-[#0d2416] border-gray-700 text-white"
+        aria-describedby="nft-details-description"
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>{nft.name}</DialogTitle>
+          <DialogDescription id="nft-details-description">
+            Detailed view of {nft.name} NFT including attributes, rarity, and transaction history.
+          </DialogDescription>
+        </DialogHeader>
+
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h3 className="text-white text-xl font-bold">{nft.name}</h3>
           <button
@@ -140,13 +151,14 @@ export function NFTDetailsModal({ isOpen, onClose, nft, isSelected, onToggleSele
                   </div>
                 ) : (
                   <div className="aspect-square relative">
-                    <Image
+                    <ProgressiveImage
                       src={imageError ? "/placeholder.svg?height=400&width=400&query=nft+placeholder" : nft.image}
                       alt={nft.name}
                       fill
                       className="object-cover"
                       onError={handleImageError}
-                      unoptimized
+                      priority
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                     {hasAnimation && (
                       <button
@@ -391,7 +403,7 @@ export function NFTDetailsModal({ isOpen, onClose, nft, isSelected, onToggleSele
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

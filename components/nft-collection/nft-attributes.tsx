@@ -1,52 +1,44 @@
-import type { NFTAttribute } from "@/types/nft"
+"use client"
 
-interface NFTAttributesProps {
-  attributes: NFTAttribute[]
-  showRarity?: boolean
+import { ScrollAnimation } from "@/components/scroll-animation"
+
+interface Attribute {
+  trait_type: string
+  value: string | number
+  rarity?: number
 }
 
-export function NFTAttributes({ attributes, showRarity = true }: NFTAttributesProps) {
+interface NFTAttributesProps {
+  attributes: Attribute[]
+}
+
+export function NFTAttributes({ attributes }: NFTAttributesProps) {
   if (!attributes || attributes.length === 0) {
     return (
-      <div className="p-4 bg-[#0d2416] rounded-lg text-center">
-        <p className="text-gray-300">No attributes found for this NFT</p>
-      </div>
+      <ScrollAnimation animation="fadeInUp" delay={0.1}>
+        <div className="text-center py-8">
+          <p className="text-gray-400">No attributes available for this NFT.</p>
+        </div>
+      </ScrollAnimation>
     )
   }
 
-  // Group attributes by trait type
-  const groupedAttributes: Record<string, NFTAttribute[]> = {}
-  attributes.forEach((attr) => {
-    if (!groupedAttributes[attr.trait_type]) {
-      groupedAttributes[attr.trait_type] = []
-    }
-    groupedAttributes[attr.trait_type].push(attr)
-  })
-
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-      {Object.entries(groupedAttributes).map(([traitType, attrs]) => (
-        <div key={traitType} className="bg-[#0d2416] rounded-lg p-3 flex flex-col">
-          <h3 className="text-sm font-medium text-gray-300 mb-1">{traitType}</h3>
-          {attrs.map((attr, index) => (
-            <div key={index} className="flex flex-col">
-              <div className="flex justify-between items-center">
-                <span className="text-white font-semibold">{attr.value.toString()}</span>
-                {showRarity && attr.frequency !== undefined && (
-                  <span className="text-xs text-gray-400">{attr.frequency.toFixed(1)}% have this</span>
-                )}
-              </div>
-              {showRarity && attr.frequency !== undefined && (
-                <div className="w-full bg-gray-700 rounded-full h-1.5 mt-1">
-                  <div
-                    className="bg-green-500 h-1.5 rounded-full"
-                    style={{ width: `${Math.min(attr.frequency, 100)}%` }}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {attributes.map((attribute, index) => (
+        <ScrollAnimation
+          key={`${attribute.trait_type}-${attribute.value}`}
+          animation="fadeInUp"
+          delay={0.1 + index * 0.05}
+        >
+          <div className="bg-[#0d2416] p-4 rounded-lg border border-[#143621] hover:border-[#1a4a2a] transition-colors">
+            <div className="text-sm text-gray-400 uppercase tracking-wide mb-1">{attribute.trait_type}</div>
+            <div className="text-white font-medium text-lg">{attribute.value}</div>
+            {attribute.rarity && (
+              <div className="text-xs text-green-400 mt-1">{(attribute.rarity * 100).toFixed(1)}% rarity</div>
+            )}
+          </div>
+        </ScrollAnimation>
       ))}
     </div>
   )

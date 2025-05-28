@@ -5,7 +5,29 @@ import { ExternalLink } from "lucide-react"
 import { useWallet } from "@/context/wallet-context"
 
 export function WalletInfo() {
-  const { isConnected, address, balance, chainId, network } = useWallet()
+  const { isConnected, isConnecting, address, balance, chainId, network } = useWallet()
+
+  if (isConnecting) {
+    return (
+      <div className="bg-[#0d2416] rounded-xl p-6 shadow-lg border border-green-400/20">
+        <div className="h-7 w-40 bg-gray-700 rounded animate-pulse mb-6"></div>
+        <div className="space-y-5">
+          <div className="flex justify-between items-center">
+            <div className="h-4 w-16 bg-gray-700 rounded animate-pulse"></div>
+            <div className="h-4 w-32 bg-gray-700 rounded animate-pulse"></div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="h-4 w-16 bg-gray-700 rounded animate-pulse"></div>
+            <div className="h-4 w-28 bg-gray-700 rounded animate-pulse"></div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="h-4 w-16 bg-gray-700 rounded animate-pulse"></div>
+            <div className="h-4 w-20 bg-gray-700 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!isConnected || !address) {
     return null

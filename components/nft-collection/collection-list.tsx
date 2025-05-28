@@ -5,8 +5,8 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import type { NFTCollection } from "@/types/nft"
-import { Loading } from "@/components/loading"
 import { Search, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { ScrollAnimation } from "@/components/scroll-animation"
 
 export function CollectionList() {
   const [collections, setCollections] = useState<NFTCollection[]>([])
@@ -1160,174 +1160,191 @@ export function CollectionList() {
   }
 
   if (loading) {
-    return <Loading />
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p className="text-white">Loading collections...</p>
+        </div>
+      </div>
+    )
   }
 
   const currentPageItems = getCurrentPageItems()
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#0d2416] rounded-xl p-4 mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search collections by name..."
-            className="w-full pl-10 pr-10 py-3 bg-[#143621] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          {searchTerm && (
-            <button
-              onClick={clearSearch}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-            >
-              <X size={16} />
-            </button>
-          )}
+      <ScrollAnimation animation="fadeInUp" delay={0}>
+        <div className="bg-[#0d2416] rounded-xl p-4 mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search collections by name..."
+              className="w-full pl-10 pr-10 py-3 bg-[#143621] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            {searchTerm && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      </ScrollAnimation>
 
       {filteredCollections.length === 0 ? (
-        <div className="bg-[#0d2416] rounded-xl p-8 text-center">
-          <h2 className="text-white text-2xl font-bold mb-4">No Collections Found</h2>
-          <p className="text-green-100 mb-6">
-            {collections.length === 0
-              ? "No collections are available at the moment."
-              : "No collections match your search criteria."}
-          </p>
-          {searchTerm && (
-            <button
-              onClick={clearSearch}
-              className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors"
-            >
-              Clear Search
-            </button>
-          )}
-        </div>
+        <ScrollAnimation animation="fadeInUp" delay={0.2}>
+          <div className="bg-[#0d2416] rounded-xl p-8 text-center">
+            <h2 className="text-white text-2xl font-bold mb-4">No Collections Found</h2>
+            <p className="text-green-100 mb-6">
+              {collections.length === 0
+                ? "No collections are available at the moment."
+                : "No collections match your search criteria."}
+            </p>
+            {searchTerm && (
+              <button
+                onClick={clearSearch}
+                className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors"
+              >
+                Clear Search
+              </button>
+            )}
+          </div>
+        </ScrollAnimation>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentPageItems.map((collection) => (
-              <Link key={collection.address} href={`/collections/${collection.address}`} className="block">
-                <div className="bg-[#0d2416] rounded-lg overflow-hidden shadow-md hover:scale-105 transition-transform duration-200">
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src={
-                        collection.banner ||
-                        collection.poster ||
-                        "/placeholder.svg?height=400&width=800&query=NFT%20Collection" ||
-                        "/placeholder.svg"
-                      }
-                      alt={collection.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-center mb-2">
+            {currentPageItems.map((collection, index) => (
+              <ScrollAnimation key={collection.address} animation="fadeInUp" delay={0.1 + (index % 9) * 0.1}>
+                <Link href={`/collections/${collection.address}`} className="block">
+                  <div className="bg-[#0d2416] rounded-lg overflow-hidden shadow-md hover:scale-105 transition-transform duration-200">
+                    <div className="h-48 overflow-hidden">
                       <img
-                        src={collection.thumbnail || "/placeholder.svg?height=40&width=40&query=NFT%20Logo"}
-                        alt={`${collection.name} logo`}
-                        className="w-10 h-10 rounded-full mr-3 object-cover"
+                        src={
+                          collection.banner ||
+                          collection.poster ||
+                          "/placeholder.svg?height=400&width=800&query=NFT%20Collection" ||
+                          "/placeholder.svg"
+                        }
+                        alt={collection.name}
+                        className="w-full h-full object-cover"
                       />
-                      <h3 className="text-white font-bold truncate hover:text-green-300 transition-colors">
-                        {collection.name}
-                      </h3>
-                      {collection.verified && (
-                        <span className="ml-2 text-green-400 text-xs bg-green-900 px-2 py-1 rounded-full">
-                          Verified
-                        </span>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center mb-2">
+                        <img
+                          src={collection.thumbnail || "/placeholder.svg?height=40&width=40&query=NFT%20Logo"}
+                          alt={`${collection.name} logo`}
+                          className="w-10 h-10 rounded-full mr-3 object-cover"
+                        />
+                        <h3 className="text-white font-bold truncate hover:text-green-300 transition-colors">
+                          {collection.name}
+                        </h3>
+                        {collection.verified && (
+                          <span className="ml-2 text-green-400 text-xs bg-green-900 px-2 py-1 rounded-full">
+                            Verified
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-400 text-sm mt-1 line-clamp-2">
+                        {collection.description?.replace(/<br\s*\/?>/gi, " ") || "No description available"}
+                      </p>
+                      {collection.stats && (
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                          <div className="bg-[#143621] p-2 rounded">
+                            <p className="text-gray-400">Floor</p>
+                            <p className="text-white font-medium">
+                              {Number.parseFloat(collection.stats.floor) / 1e18 > 0
+                                ? `${(Number.parseFloat(collection.stats.floor) / 1e18).toFixed(2)} S`
+                                : "N/A"}
+                            </p>
+                          </div>
+                          <div className="bg-[#143621] p-2 rounded">
+                            <p className="text-gray-400">Items</p>
+                            <p className="text-white font-medium">{collection.stats.totalNFTs || "N/A"}</p>
+                          </div>
+                        </div>
                       )}
                     </div>
-                    <p className="text-gray-400 text-sm mt-1 line-clamp-2">
-                      {collection.description?.replace(/<br\s*\/?>/gi, " ") || "No description available"}
-                    </p>
-                    {collection.stats && (
-                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-[#143621] p-2 rounded">
-                          <p className="text-gray-400">Floor</p>
-                          <p className="text-white font-medium">
-                            {Number.parseFloat(collection.stats.floor) / 1e18 > 0
-                              ? `${(Number.parseFloat(collection.stats.floor) / 1e18).toFixed(2)} S`
-                              : "N/A"}
-                          </p>
-                        </div>
-                        <div className="bg-[#143621] p-2 rounded">
-                          <p className="text-gray-400">Items</p>
-                          <p className="text-white font-medium">{collection.stats.totalNFTs || "N/A"}</p>
-                        </div>
-                      </div>
-                    )}
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </ScrollAnimation>
             ))}
           </div>
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center mt-8 space-x-2">
-              <button
-                onClick={goToPreviousPage}
-                disabled={currentPage === 1}
-                className={`flex items-center justify-center w-10 h-10 rounded-md ${
-                  currentPage === 1
-                    ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                    : "bg-[#143621] text-white hover:bg-green-700"
-                }`}
-                aria-label="Previous page"
-              >
-                <ChevronLeft size={20} />
-              </button>
-
-              {getPageNumbers().map((page, index) => (
+            <ScrollAnimation animation="fadeInUp" delay={0.3}>
+              <div className="flex justify-center items-center mt-8 space-x-2">
                 <button
-                  key={index}
-                  onClick={() => typeof page === "number" && goToPage(page)}
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
                   className={`flex items-center justify-center w-10 h-10 rounded-md ${
-                    page === currentPage
-                      ? "bg-green-600 text-white"
-                      : page === "..."
-                        ? "bg-transparent text-gray-400 cursor-default"
-                        : "bg-[#143621] text-white hover:bg-green-700"
+                    currentPage === 1
+                      ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                      : "bg-[#143621] text-white hover:bg-green-700"
                   }`}
-                  disabled={page === "..."}
+                  aria-label="Previous page"
                 >
-                  {page}
+                  <ChevronLeft size={20} />
                 </button>
-              ))}
 
-              <button
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-                className={`flex items-center justify-center w-10 h-10 rounded-md ${
-                  currentPage === totalPages
-                    ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                    : "bg-[#143621] text-white hover:bg-green-700"
-                }`}
-                aria-label="Next page"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
+                {getPageNumbers().map((page, index) => (
+                  <button
+                    key={index}
+                    onClick={() => typeof page === "number" && goToPage(page)}
+                    className={`flex items-center justify-center w-10 h-10 rounded-md ${
+                      page === currentPage
+                        ? "bg-green-600 text-white"
+                        : page === "..."
+                          ? "bg-transparent text-gray-400 cursor-default"
+                          : "bg-[#143621] text-white hover:bg-green-700"
+                    }`}
+                    disabled={page === "..."}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`flex items-center justify-center w-10 h-10 rounded-md ${
+                    currentPage === totalPages
+                      ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                      : "bg-[#143621] text-white hover:bg-green-700"
+                  }`}
+                  aria-label="Next page"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            </ScrollAnimation>
           )}
 
           {/* Page size selector */}
-          <div className="flex justify-center mt-4">
-            <div className="flex items-center space-x-2 text-sm text-gray-300">
-              <span>Show per page:</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                className="bg-[#143621] border border-gray-700 rounded px-2 py-1 text-white"
-              >
-                <option value={9}>9</option>
-                <option value={18}>18</option>
-                <option value={27}>27</option>
-                <option value={36}>36</option>
-              </select>
+          <ScrollAnimation animation="fadeInUp" delay={0.4}>
+            <div className="flex justify-center mt-4">
+              <div className="flex items-center space-x-2 text-sm text-gray-300">
+                <span>Show per page:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                  className="bg-[#143621] border border-gray-700 rounded px-2 py-1 text-white"
+                >
+                  <option value={9}>9</option>
+                  <option value={18}>18</option>
+                  <option value={27}>27</option>
+                  <option value={36}>36</option>
+                </select>
+              </div>
             </div>
-          </div>
+          </ScrollAnimation>
         </>
       )}
     </div>

@@ -1,34 +1,53 @@
 export interface NFT {
   id: string
-  tokenId: string
-  address: string
   name: string
-  description: string
   image: string
-  thumbnail?: string
+  tokenId: string
+  contractAddress: string
+  rarity?:
+    | string
+    | {
+        score: number
+        rank: number
+        total: number
+        calculated_at: number
+      }
+    | null
+  attributes?: Array<{
+    trait_type: string
+    value: string
+    display_type?: string
+    frequency?: number
+    average?: string
+    count?: number
+  }>
   owner: string
-  creator: string
-  collection: {
+  isStaked?: boolean
+  stakingRewards?: string
+  isOnSale?: boolean
+  price?: string
+  verified?: boolean
+  whitelisted?: boolean
+  createdAt?: string
+  lastTransferAt?: string
+  // Additional fields from PaintSwap API
+  mintOrder?: string
+  approvalState?: string
+  contentVerified?: boolean
+  isERC721?: boolean
+  isTransferable?: boolean
+  creator?: string
+  locked?: string
+  isNSFW?: boolean
+  isTracked?: boolean
+  address?: string
+  collection?: {
     address: string
     name: string
     isVerified: boolean
     isWhitelisted: boolean
   }
-  attributes: NFTAttribute[]
-  rarity?: {
-    score: number
-    rank: number
-    total: number
-    calculated_at: number
-  } | null
-  createdAt: string
-  lastTransferAt: string
-  isOnSale: boolean
-  price: string
-  isERC721: boolean
-  mintOrder: string
-  approvalState: string
-  contentVerified: boolean
+  thumbnail?: string
 }
 
 export interface NFTAttribute {
@@ -55,9 +74,19 @@ export interface NFTCollection {
   telegram?: string
   floorPrice?: string
   volume24h?: string
+  volumeWeek?: string
   totalVolume?: string
+  sales24h?: string
+  salesWeek?: string
+  totalSales?: string
+  averagePrice?: string
+  marketCap?: string
   owners?: number
   items?: number
+  traitTypes?: number
+  traits?: Record<string, Record<string, number>>
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface NFTCollectionResponse {

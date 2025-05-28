@@ -29,7 +29,10 @@ export function MobileMenu({ children }: MobileMenuProps) {
           isOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <div className="flex flex-col items-center space-y-6 w-full px-6">{children}</div>
+        <div className="flex flex-col items-center space-y-6 w-full px-6">
+          <div className="text-white text-2xl font-bold mb-6">LLAMAS HUB</div>
+          {children}
+        </div>
       </div>
     </div>
   )

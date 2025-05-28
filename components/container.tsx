@@ -6,6 +6,7 @@ interface ContainerProps {
   className?: string
 }
 
+// Simple, lightweight container component
 export function Container({ children, className }: ContainerProps) {
   return <div className={cn("w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", className)}>{children}</div>
 }
