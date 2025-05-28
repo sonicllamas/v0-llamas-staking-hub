@@ -11,7 +11,7 @@ import { BackButton } from "@/components/back-button"
 import { CheckCircle, AlertCircle, Wallet } from "lucide-react"
 
 export default function WalletVerificationPage() {
-  const { address, chainId, balance, connectedWallets, switchWallet, activeWalletType } = useWallet()
+  const { address, chainId, balance, connectedWallets = [], switchWallet, activeWalletType } = useWallet()
 
   const [actionLog, setActionLog] = useState<string[]>([])
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null)
@@ -19,8 +19,8 @@ export default function WalletVerificationPage() {
   // Log initial state
   useEffect(() => {
     logAction("Page loaded, current wallet: " + (address || "None"))
-    logAction(`Connected wallets: ${connectedWallets.length}`)
-  }, [])
+    logAction(`Connected wallets: ${connectedWallets?.length || 0}`)
+  }, [address, connectedWallets])
 
   const logAction = (action: string) => {
     setActionLog((prev) => [`[${new Date().toLocaleTimeString()}] ${action}`, ...prev])
@@ -28,14 +28,16 @@ export default function WalletVerificationPage() {
 
   const handleSwitchWallet = (walletAddress: string) => {
     logAction(`Attempting to switch to wallet: ${walletAddress}`)
-    switchWallet(walletAddress)
+    if (switchWallet) {
+      switchWallet(walletAddress)
+    }
   }
 
   const runVerificationTest = () => {
     logAction("Starting verification test...")
 
     // Find a wallet that's not the current one
-    const otherWallet = connectedWallets.find((wallet) => wallet.address !== address)
+    const otherWallet = connectedWallets?.find((wallet) => wallet.address !== address)
 
     if (!otherWallet) {
       logAction("Test failed: Need at least two connected wallets")
@@ -48,25 +50,27 @@ export default function WalletVerificationPage() {
 
     // Try switching to the other wallet
     try {
-      switchWallet(otherWallet.address)
-      logAction(`Switched to wallet: ${otherWallet.address}`)
+      if (switchWallet) {
+        switchWallet(otherWallet.address)
+        logAction(`Switched to wallet: ${otherWallet.address}`)
 
-      // Check if the switch was successful
-      setTimeout(() => {
-        if (address === otherWallet.address) {
-          logAction("Test passed: Successfully switched wallet")
-          setTestResult({
-            success: true,
-            message: "Wallet switching is working correctly!",
-          })
-        } else {
-          logAction("Test failed: Wallet did not switch")
-          setTestResult({
-            success: false,
-            message: "Wallet did not switch correctly. Check console for errors.",
-          })
-        }
-      }, 500)
+        // Check if the switch was successful
+        setTimeout(() => {
+          if (address === otherWallet.address) {
+            logAction("Test passed: Successfully switched wallet")
+            setTestResult({
+              success: true,
+              message: "Wallet switching is working correctly!",
+            })
+          } else {
+            logAction("Test failed: Wallet did not switch")
+            setTestResult({
+              success: false,
+              message: "Wallet did not switch correctly. Check console for errors.",
+            })
+          }
+        }, 500)
+      }
     } catch (error) {
       logAction(`Test error: ${error}`)
       setTestResult({
@@ -91,7 +95,9 @@ export default function WalletVerificationPage() {
     return networks[chainId] || `Chain ID: ${chainId}`
   }
 
-  const getWalletTypeName = (type: string) => {
+  const getWalletTypeName = (type?: string) => {
+    if (!type) return "Unknown"
+
     const types: Record<string, string> = {
       injected: "MetaMask/Injected",
       walletconnect: "WalletConnect",
@@ -101,6 +107,8 @@ export default function WalletVerificationPage() {
 
     return types[type] || type
   }
+
+  const connectedWalletsCount = connectedWallets?.length || 0
 
   return (
     <Container>
@@ -141,8 +149,8 @@ export default function WalletVerificationPage() {
               </div>
 
               <div>
-                <h3 className="text-lg font-medium mb-2">Connected Wallets ({connectedWallets.length})</h3>
-                {connectedWallets.length > 0 ? (
+                <h3 className="text-lg font-medium mb-2">Connected Wallets ({connectedWalletsCount})</h3>
+                {connectedWalletsCount > 0 ? (
                   <div className="space-y-3">
                     {connectedWallets.map((wallet) => (
                       <div
@@ -201,7 +209,7 @@ export default function WalletVerificationPage() {
             <Button variant="outline" onClick={() => setActionLog([])}>
               Clear Log
             </Button>
-            <Button onClick={runVerificationTest} disabled={connectedWallets.length < 2}>
+            <Button onClick={runVerificationTest} disabled={connectedWalletsCount < 2}>
               Test Wallet Switching
             </Button>
           </CardFooter>

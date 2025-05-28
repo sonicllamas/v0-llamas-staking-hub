@@ -1,5 +1,3 @@
-import { ethers } from "ethers"
-
 declare global {
   interface Window {
     ethereum?: any
@@ -27,7 +25,6 @@ export interface BulkTransferResult {
 
 export class NFTTransferService {
   private provider: any = null
-  private signer: any = null
 
   constructor() {
     // Initialize provider only when needed
@@ -83,14 +80,7 @@ export class NFTTransferService {
   }
 
   /**
-   * Convert decimal to hex
-   */
-  private decimalToHex(decimal: string): string {
-    return "0x" + Number.parseInt(decimal).toString(16)
-  }
-
-  /**
-   * Format Wei to Ether
+   * Format Wei to Ether using native BigInt
    */
   private formatEther(wei: string): string {
     const weiNum = BigInt(wei)
@@ -99,7 +89,7 @@ export class NFTTransferService {
   }
 
   /**
-   * Parse Ether to Wei
+   * Parse Ether to Wei using native BigInt
    */
   private parseEther(ether: string): string {
     const etherNum = Number.parseFloat(ether)
@@ -183,7 +173,7 @@ export class NFTTransferService {
       const gasLimit = Math.floor(Number.parseInt(gasEstimate, 16) * 1.2)
       const gasLimitHex = "0x" + gasLimit.toString(16)
 
-      // Calculate cost
+      // Calculate cost using native BigInt
       const gasCost = BigInt(gasLimit) * BigInt(gasPrice)
       const estimatedCost = this.formatEther(gasCost.toString())
 
@@ -335,7 +325,7 @@ export class NFTTransferService {
   ): Promise<BulkTransferResult> {
     const successful: TransferResult[] = []
     const failed: TransferResult[] = []
-    let totalGasCost = ethers.BigNumber.from(0)
+    let totalGasCostBigInt = BigInt(0)
 
     console.log(`🔄 Starting bulk transfer of ${transfers.length} NFTs`)
 
@@ -358,7 +348,9 @@ export class NFTTransferService {
         if (result.success) {
           successful.push(result)
           if (result.gasCost) {
-            totalGasCost = totalGasCost.add(ethers.utils.parseEther(result.gasCost))
+            // Parse the gas cost and add to total using BigInt
+            const gasCostWei = this.parseEther(result.gasCost)
+            totalGasCostBigInt = totalGasCostBigInt + BigInt(gasCostWei)
           }
         } else {
           failed.push(result)
@@ -384,7 +376,7 @@ export class NFTTransferService {
     const result: BulkTransferResult = {
       successful,
       failed,
-      totalGasCost: ethers.utils.formatEther(totalGasCost),
+      totalGasCost: this.formatEther(totalGasCostBigInt.toString()),
       summary: {
         successCount: successful.length,
         failCount: failed.length,
