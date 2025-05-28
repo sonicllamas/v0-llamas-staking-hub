@@ -61,53 +61,63 @@ export interface LimitOrderParams {
 }
 
 export class OpenOceanService {
+  private apiKey: string
+
+  constructor() {
+    this.apiKey = process.env.NEXT_PUBLIC_OPENOCEAN_API_KEY || ""
+  }
+
   /**
-   * Validate API key configuration (client-safe)
+   * Validate API key configuration
    */
   validateApiKey(): boolean {
-    // Client-side validation removed for security
-    // API key validation now happens server-side
+    if (!this.apiKey || this.apiKey.length < 10) {
+      console.warn("OpenOcean API key not configured or invalid")
+      return false
+    }
     return true
   }
 
   /**
-   * Make API request to OpenOcean via server-side proxy
+   * Make API request to OpenOcean
    */
   private async makeApiRequest(endpoint: string, params: Record<string, any>) {
-    try {
-      // Use server-side API route instead of direct API calls
-      const response = await fetch("/api/openocean/proxy", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          endpoint,
-          params,
-        }),
-      })
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error("Invalid OpenOcean API key")
-        }
-        const errorText = await response.text()
-        throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
+    const url = new URL(endpoint, OPENOCEAN_API_BASE)
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== undefined && params[key] !== null) {
+        url.searchParams.append(key, params[key].toString())
       }
+    })
 
-      return response.json()
-    } catch (error: any) {
-      console.error("OpenOcean API request error:", error)
-      throw error
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(this.apiKey && { Authorization: `Bearer ${this.apiKey}` }),
+      },
+    })
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error("Invalid OpenOcean API key")
+      }
+      const errorText = await response.text()
+      throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
     }
+
+    return response.json()
   }
 
   /**
    * Get swap quote from OpenOcean aggregator
    */
   async getSwapQuote(params: SwapQuoteParams): Promise<SwapQuoteResponse> {
+    if (!this.validateApiKey()) {
+      throw new Error("OpenOcean API key not configured")
+    }
+
     try {
-      // Use the server-side proxy for API calls
+      // Use the correct OpenOcean API endpoint format
       const response = await this.makeApiRequest("/v2/quote", {
         chain: params.chainId,
         inTokenAddress: params.inTokenAddress,
@@ -360,19 +370,6 @@ export class OpenOceanService {
       return `${Number.parseFloat(gasPriceGwei).toFixed(2)} gwei`
     } catch (error) {
       return "Unknown"
-    }
-  }
-
-  /**
-   * Check API key status via server-side endpoint
-   */
-  async checkApiKeyStatus(): Promise<{ valid: boolean; message: string }> {
-    try {
-      const response = await fetch("/api/openocean/status")
-      const result = await response.json()
-      return result
-    } catch (error) {
-      return { valid: false, message: "Unable to check API status" }
     }
   }
 }

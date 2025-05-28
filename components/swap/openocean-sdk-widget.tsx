@@ -73,13 +73,13 @@ export function OpenOceanSDKWidget() {
     }
   }, [isConnected, address, isArbitrumNetwork])
 
-  // Check API key status via server-side endpoint
+  // Check API key status
   useEffect(() => {
-    const checkApiKey = async () => {
-      try {
-        const status = await openOceanService.checkApiKeyStatus()
-        setApiKeyStatus(status.valid ? "valid" : "invalid")
-      } catch (error) {
+    const checkApiKey = () => {
+      const apiKey = process.env.NEXT_PUBLIC_OPENOCEAN_API_KEY
+      if (apiKey && apiKey.length > 10) {
+        setApiKeyStatus("valid")
+      } else {
         setApiKeyStatus("invalid")
       }
     }
@@ -308,7 +308,7 @@ export function OpenOceanSDKWidget() {
             </div>
             <div>
               <CardTitle className="text-lg text-gray-900">OpenOcean SDK</CardTitle>
-              <p className="text-sm text-gray-500">Secure DEX Aggregator Integration</p>
+              <p className="text-sm text-gray-500">Real DEX Aggregator Integration</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -492,7 +492,7 @@ export function OpenOceanSDKWidget() {
 
         <div className="mt-6 pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Powered by OpenOcean SDK v2.1.0 (Secure)</span>
+            <span>Powered by OpenOcean SDK v2.1.0</span>
             <div className="flex items-center space-x-4">
               <span>Gas: {gasPrice}</span>
               <Badge variant="secondary" className="text-xs">

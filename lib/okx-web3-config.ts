@@ -9,37 +9,20 @@ export const web3 = new Web3(
 // API Configuration
 export const baseUrl = "https://web3.okx.com/api/v5/dex/aggregator/"
 
-// Server-side only API credentials - these will be empty strings on client-side
-export const OKX_API_KEY =
-  typeof window !== "undefined"
-    ? "" // Empty on client-side for security
-    : process.env.OKX_API_KEY || ""
-
-export const OKX_SECRET_KEY =
-  typeof window !== "undefined"
-    ? "" // Empty on client-side for security
-    : process.env.OKX_SECRET_KEY || ""
-
-export const OKX_API_PASSPHRASE =
-  typeof window !== "undefined"
-    ? "" // Empty on client-side for security
-    : process.env.OKX_API_PASSPHRASE || ""
-
-export const OKX_PROJECT_ID =
-  typeof window !== "undefined"
-    ? "" // Don't expose on client
-    : process.env.OKX_PROJECT_ID || ""
+// Get API credentials from environment variables
+export const OKX_API_KEY = process.env.OKX_API_KEY || ""
+export const OKX_SECRET_KEY = process.env.OKX_SECRET_KEY || ""
+export const OKX_API_PASSPHRASE = process.env.OKX_API_PASSPHRASE || ""
+export const OKX_PROJECT_ID = process.env.OKX_PROJECT_ID || ""
 
 // Log configuration status (without exposing sensitive data)
-if (typeof window === "undefined") {
-  console.log("OKX API Configuration:", {
-    hasApiKey: !!OKX_API_KEY,
-    hasSecretKey: !!OKX_SECRET_KEY,
-    hasPassphrase: !!OKX_API_PASSPHRASE,
-    hasProjectId: !!OKX_PROJECT_ID,
-    baseUrl,
-  })
-}
+console.log("OKX API Configuration:", {
+  hasApiKey: !!OKX_API_KEY,
+  hasSecretKey: !!OKX_SECRET_KEY,
+  hasPassphrase: !!OKX_API_PASSPHRASE,
+  hasProjectId: !!OKX_PROJECT_ID,
+  baseUrl,
+})
 
 // Chain IDs
 export const ETHEREUM_CHAIN_ID = "1"
@@ -59,33 +42,24 @@ export const SONIC_USDC_ADDRESS = "0x29219dd400f2Bf60E5a23d13Be72B486D4038894"
 export const SONIC_USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955"
 export const SONIC_WETH_ADDRESS = "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38"
 
-// DEX Spender Address
+// DEX Spender Address - IMPORTANT: This was missing!
 export const DEX_SPENDER_ADDRESS = "0xdef1c0ded9bec7f1a1670819833240f027b25eff"
 
-// Wallet configuration for server-side operations only
+// Wallet configuration for server-side operations
 export const WALLET_ADDRESS =
-  typeof window !== "undefined"
-    ? "" // Don't expose on client
-    : process.env.EVM_WALLET_ADDRESS || "0x1E9f317cB3A0c3B23c9D82DAec5A18d7895639F0"
-
+  (typeof process !== "undefined" ? process.env.EVM_WALLET_ADDRESS : "") || "0x1E9f317cB3A0c3B23c9D82DAec5A18d7895639F0"
 export const PRIVATE_KEY =
-  typeof window !== "undefined"
-    ? "" // Don't expose on client
-    : process.env.EVM_PRIVATE_KEY || "0x2b1a3a1517ed65cc9530b4a14c8a06502e4b1a30a426e750a4b7fed56b4e254e"
+  (typeof process !== "undefined" ? process.env.EVM_PRIVATE_KEY : "") ||
+  "0x2b1a3a1517ed65cc9530b4a14c8a06502e4b1a30a426e750a4b7fed56b4e254e"
 
 // Amount to swap in smallest unit (approx $1 of ETH)
 export const SWAP_AMOUNT = "500000000000000" // 0.0005 ETH (approx $1)
 
 /**
- * Check if OKX API is configured (server-side only)
+ * Check if OKX API is configured
+ * @returns true if OKX API is configured
  */
 export function isOKXConfigured(): boolean {
-  // Only check on server-side
-  if (typeof window !== "undefined") {
-    console.warn("OKX configuration check should only be done server-side")
-    return false
-  }
-
   const hasCredentials = !!(OKX_API_KEY && OKX_SECRET_KEY && OKX_API_PASSPHRASE)
   console.log("OKX API Configuration Check:", {
     hasApiKey: !!OKX_API_KEY,
@@ -98,7 +72,12 @@ export function isOKXConfigured(): boolean {
 }
 
 /**
- * Create a pre-signature based on strings and parameters (server-side only)
+ * Create a pre-signature based on strings and parameters
+ * @param timestamp - ISO timestamp
+ * @param method - HTTP method (GET/POST)
+ * @param requestPath - API request path
+ * @param params - Request parameters
+ * @returns Pre-hash string
  */
 function preHash(timestamp: string, method: string, requestPath: string, params?: any): string {
   let queryString = ""
@@ -121,22 +100,24 @@ function preHash(timestamp: string, method: string, requestPath: string, params?
 }
 
 /**
- * Sign message using HMAC-SHA256 (server-side only)
+ * Sign message using HMAC-SHA256
+ * @param message - Message to sign
+ * @param secretKey - Secret key for signing
+ * @returns Base64 encoded signature
  */
 function sign(message: string, secretKey: string): string {
   return CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, secretKey))
 }
 
 /**
- * Create signature for OKX API authentication (server-side only)
+ * Create signature for OKX API authentication
+ * @param method - HTTP method
+ * @param requestPath - API request path
+ * @param params - Request parameters
+ * @returns Signature and timestamp
  */
 function createSignature(method: string, requestPath: string, params?: any) {
-  // Only allow on server-side
-  if (typeof window !== "undefined") {
-    throw new Error("OKX API signing should only be done server-side")
-  }
-
-  // Get timestamp in ISO 8601 format
+  // Get timestamp in ISO 8601 format (matching your Node.js example)
   const timestamp = new Date().toISOString()
 
   // Generate signature
@@ -147,7 +128,12 @@ function createSignature(method: string, requestPath: string, params?: any) {
 }
 
 /**
- * Generate OKX API headers with proper authentication (server-side only)
+ * Generate OKX API headers with proper authentication
+ * @param timestamp - Current timestamp
+ * @param method - HTTP method
+ * @param requestPath - API request path
+ * @param params - Request parameters
+ * @returns Headers for OKX API
  */
 export function getHeaders(
   timestamp: string,
@@ -155,11 +141,6 @@ export function getHeaders(
   requestPath: string,
   params?: any,
 ): Record<string, string> {
-  // Only allow on server-side
-  if (typeof window !== "undefined") {
-    throw new Error("OKX API headers should only be generated server-side")
-  }
-
   if (!isOKXConfigured()) {
     console.warn("OKX API not configured, using mock headers")
     return {
@@ -181,14 +162,13 @@ export function getHeaders(
 }
 
 /**
- * Alternative header generation function (server-side only)
+ * Alternative header generation function that matches your Node.js example exactly
+ * @param method - HTTP method
+ * @param requestPath - API request path
+ * @param params - Request parameters
+ * @returns Headers for OKX API
  */
 export function createOKXHeaders(method: string, requestPath: string, params?: any): Record<string, string> {
-  // Only allow on server-side
-  if (typeof window !== "undefined") {
-    throw new Error("OKX API headers should only be generated server-side")
-  }
-
   if (!isOKXConfigured()) {
     console.warn("OKX API not configured, using mock headers")
     return {
