@@ -3,21 +3,11 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    formats: ['image/avif', 'image/webp'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
+    domains: ['ipfs.io', 'gateway.ipfs.io', 'cloudflare-ipfs.com', 'ipfs.infura.io'],
     unoptimized: true,
   },
   experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ['lucide-react'],
-  },
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    optimizeCss: false, // Disable critters
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -25,6 +15,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
