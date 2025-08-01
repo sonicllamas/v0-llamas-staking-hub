@@ -344,7 +344,7 @@ export default function UserNFTsDisplay() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <BackButton href="/" label="Back to Home" />
-          <h1 className="text-3xl font-bold">My NFTs on Sonic Mainnet</h1>
+          <h1 className="text-3xl font-bold">NFT Marketplace - My Collection</h1>
         </div>
         <div className="flex flex-col items-center justify-center p-8">
           <Loading />
@@ -359,12 +359,12 @@ export default function UserNFTsDisplay() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <BackButton href="/" label="Back to Home" />
-          <h1 className="text-3xl font-bold">My NFTs on Sonic Mainnet</h1>
+          <h1 className="text-3xl font-bold">NFT Marketplace - My Collection</h1>
         </div>
         <div className="flex flex-col items-center justify-center p-8 text-center">
           <Wallet className="mb-4 h-16 w-16 text-gray-400" />
           <h2 className="mb-2 text-2xl font-bold">Connect Your Wallet</h2>
-          <p className="mb-6 text-gray-400">Connect your wallet to view your NFTs on Sonic Mainnet</p>
+          <p className="mb-6 text-gray-400">Connect your wallet to view your NFTs in the marketplace</p>
 
           <div className="space-y-4">
             <div className="flex justify-center items-center text-green-400">
@@ -402,13 +402,13 @@ export default function UserNFTsDisplay() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <BackButton href="/" label="Back to Home" />
-          <h1 className="text-3xl font-bold">My NFTs on Sonic Mainnet</h1>
+          <h1 className="text-3xl font-bold">NFT Marketplace - My Collection</h1>
         </div>
         <div className="flex flex-col items-center justify-center p-8 text-center">
           <AlertCircle className="mb-4 h-16 w-16 text-yellow-400" />
           <h2 className="mb-2 text-2xl font-bold">Wrong Network</h2>
           <p className="mb-6 text-gray-400">
-            Please switch to Sonic Mainnet to view your NFTs
+            Please switch to Sonic Mainnet to access the marketplace
             {chainId && <span className="block text-sm mt-2">Currently on chain ID: {chainId}</span>}
           </p>
           <Button onClick={handleSwitchNetwork}>Switch to Sonic</Button>
@@ -422,7 +422,7 @@ export default function UserNFTsDisplay() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <BackButton href="/" label="Back to Home" />
-          <h1 className="text-3xl font-bold">My NFTs on Sonic Mainnet</h1>
+          <h1 className="text-3xl font-bold">NFT Marketplace - My Collection</h1>
         </div>
         <div className="flex flex-col items-center justify-center p-8">
           <div className="flex items-center gap-3 mb-4">
@@ -471,11 +471,11 @@ export default function UserNFTsDisplay() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <BackButton href="/" label="Back to Home" />
-          <h1 className="text-3xl font-bold">My NFTs on Sonic Mainnet</h1>
+          <h1 className="text-3xl font-bold">NFT Marketplace - My Collection</h1>
         </div>
         <div className="flex flex-col items-center justify-center p-8 text-center">
           <AlertCircle className="mb-4 h-16 w-16 text-red-400" />
-          <h2 className="mb-2 text-2xl font-bold">Error Loading NFTs</h2>
+          <h2 className="mb-2 text-2xl font-bold">Error Loading Marketplace</h2>
           <p className="mb-6 text-gray-400">{error}</p>
           <div className="flex gap-4">
             <Button onClick={() => window.location.reload()}>Try Again</Button>
@@ -493,241 +493,8 @@ export default function UserNFTsDisplay() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <BackButton href="/" label="Back to Home" />
-          <h1 className="text-3xl font-bold">My NFTs on Sonic Mainnet</h1>
+          <h1 className="text-3xl font-bold">NFT Marketplace - My Collection</h1>
         </div>
         <div className="flex flex-col items-center justify-center p-8 text-center">
           <h2 className="mb-2 text-2xl font-bold">No NFTs Found</h2>
-          <p className="text-gray-400">
-            No NFTs found in wallet {address?.substring(0, 6)}...{address?.substring(address.length - 4)} on Sonic
-            Mainnet
-          </p>
-          <p className="text-sm text-gray-500 mt-2">Make sure you're connected to the correct wallet and network</p>
-          <Button onClick={handleRefreshConnection} className="mt-4" variant="outline">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh & Scan Again
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <BackButton href="/" label="Back to Home" />
-        <div>
-          <h1 className="text-3xl font-bold">My NFTs on Sonic Mainnet</h1>
-          <div className="text-gray-400">
-            <p>
-              Found {nfts.length} NFT{nfts.length !== 1 ? "s" : ""} in wallet {address?.substring(0, 6)}...
-              {address?.substring(address.length - 4)}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Collection Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {sortedCollections.map(([collectionName, collectionNFTs]) => (
-          <Card key={collectionName} className="overflow-hidden">
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg flex items-center justify-between">
-                <span className="truncate">{collectionName}</span>
-                <Badge variant={collectionName === "Sonic Llamas" ? "default" : "outline"}>
-                  {collectionNFTs.length}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <div className="flex gap-2 flex-wrap">
-                {collectionNFTs.slice(0, 4).map((nft) => (
-                  <div key={nft.id} className="w-12 h-12 rounded overflow-hidden">
-                    <img
-                      src={nft.thumbnail || nft.image}
-                      alt={nft.name}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-                ))}
-                {collectionNFTs.length > 4 && (
-                  <div className="w-12 h-12 rounded bg-gray-800 flex items-center justify-center text-xs">
-                    +{collectionNFTs.length - 4}
-                  </div>
-                )}
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full mt-2"
-                onClick={() => setActiveCollection(collectionName)}
-              >
-                View All
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Collection Filter Tabs */}
-      <div className="flex items-center gap-2 border-b pb-2">
-        <Filter className="h-4 w-4 text-gray-400" />
-        <span className="text-sm font-medium">Filter by Collection:</span>
-        <div className="flex flex-wrap gap-2">
-          <Badge
-            variant={activeCollection === "all" ? "default" : "outline"}
-            className="cursor-pointer"
-            onClick={() => setActiveCollection("all")}
-          >
-            All ({nfts.length})
-          </Badge>
-
-          {sortedCollections.map(([collectionName, collectionNFTs]) => (
-            <Badge
-              key={collectionName}
-              variant={activeCollection === collectionName ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => setActiveCollection(collectionName)}
-            >
-              {collectionName} ({collectionNFTs.length})
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      {/* Active Collection Display */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">
-          {activeCollection === "all" ? "All NFTs" : activeCollection}{" "}
-          <span className="text-sm font-normal text-gray-400">
-            ({displayNFTs.length} NFT{displayNFTs.length !== 1 ? "s" : ""})
-          </span>
-        </h2>
-        {/* Selection Controls */}
-        {displayNFTs.length > 0 && (
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="select-all"
-                  checked={selectedNFTs.length === displayNFTs.length && displayNFTs.length > 0}
-                  onCheckedChange={handleSelectAll}
-                />
-                <label htmlFor="select-all" className="text-sm font-medium">
-                  Select All ({displayNFTs.length})
-                </label>
-              </div>
-
-              <Button variant="outline" size="sm" onClick={() => setSelectionMode(!selectionMode)}>
-                {selectionMode ? "Exit Selection" : "Select Mode"}
-              </Button>
-            </div>
-
-            {selectedNFTs.length > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{selectedNFTs.length} selected</span>
-                <Button size="sm" onClick={handleBulkTransfer} disabled={selectedNFTs.length === 0}>
-                  <Send className="mr-2 h-4 w-4" />
-                  Bulk Transfer ({selectedNFTs.length})
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* NFT Grid with Transfer Options */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {displayNFTs.map((nft) => (
-            <div key={nft.id} className="relative">
-              {/* Selection Checkbox */}
-              {selectionMode && (
-                <div className="absolute top-2 left-2 z-10">
-                  <Checkbox
-                    checked={selectedNFTs.some((n) => n.id === nft.id)}
-                    onCheckedChange={(checked) => handleNFTSelect(nft, checked as boolean)}
-                    className="bg-white border-2"
-                  />
-                </div>
-              )}
-
-              {/* NFT Card */}
-              <Card className="group cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105">
-                <CardContent className="p-0">
-                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                    <img
-                      src={nft.thumbnail || nft.image}
-                      alt={nft.name}
-                      className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-110"
-                      loading="lazy"
-                    />
-
-                    {/* Transfer Button Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <Button
-                        size="sm"
-                        onClick={() => handleTransferSingle(nft)}
-                        className="bg-white text-black hover:bg-gray-100"
-                      >
-                        <Send className="mr-2 h-4 w-4" />
-                        Transfer
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="p-4">
-                    <div className="space-y-2">
-                      <h3 className="font-semibold text-lg truncate" title={nft.name}>
-                        {nft.name}
-                      </h3>
-
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <span>#{nft.tokenId}</span>
-                        <span className="truncate max-w-[120px]" title={nft.collection.name}>
-                          {nft.collection.name}
-                        </span>
-                      </div>
-
-                      {/* Collection Verification */}
-                      {nft.collection?.isVerified && (
-                        <div className="flex items-center gap-1 text-xs text-blue-500">
-                          <CheckCircle className="h-3 w-3" />
-                          <span>Verified</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Refresh Button */}
-      <div className="flex justify-center mt-8">
-        <Button onClick={() => window.location.reload()} variant="outline">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Refresh NFTs
-        </Button>
-      </div>
-
-      {/* Transfer Modals */}
-      <TransferNFTModal
-        isOpen={transferModalOpen}
-        onClose={() => {
-          setTransferModalOpen(false)
-          setSelectedNFTForTransfer(null)
-        }}
-        nft={selectedNFTForTransfer}
-        userAddress={address || ""}
-      />
-
-      <BulkTransferModal
-        isOpen={bulkTransferModalOpen}
-        onClose={() => setBulkTransferModalOpen(false)}
-        selectedNFTs={selectedNFTs}
-        userAddress={address || ""}
-      />
-    </div>
-  )
-}
+          <p className="text

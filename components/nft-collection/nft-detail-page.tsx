@@ -70,7 +70,7 @@ export function NFTDetailPage() {
     <div className="space-y-8">
       <ScrollAnimation animation="fadeInDown" delay={0.1}>
         <div className="flex justify-between items-center">
-          <BackButton href="/my-nfts" />
+          <BackButton href="/nft-marketplace" />
           <StakingButton nft={nft} />
         </div>
       </ScrollAnimation>

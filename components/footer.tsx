@@ -77,8 +77,8 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/my-nfts" className="text-gray-400 hover:text-white transition-colors text-sm">
-                    My NFTs
+                  <Link href="/nft-marketplace" className="text-gray-400 hover:text-white transition-colors text-sm">
+                    NFT Marketplace
                   </Link>
                 </li>
                 <li>

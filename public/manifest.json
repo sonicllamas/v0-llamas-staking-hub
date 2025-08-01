@@ -73,10 +73,10 @@
   ],
   "shortcuts": [
     {
-      "name": "My NFTs",
-      "short_name": "NFTs",
-      "description": "View your NFT collection",
-      "url": "/my-nfts",
+      "name": "NFT Marketplace",
+      "short_name": "Marketplace",
+      "description": "Browse and manage NFTs in the marketplace",
+      "url": "/nft-marketplace",
       "icons": [{ "src": "/icons/nft-icon-96x96.png", "sizes": "96x96" }]
     },
     {

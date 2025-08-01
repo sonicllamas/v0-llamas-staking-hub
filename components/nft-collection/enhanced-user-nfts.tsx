@@ -199,7 +199,7 @@ export default function EnhancedUserNFTs() {
     <div className="space-y-6">
       {/* Header with Stats */}
       <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold">My NFT Collection</h1>
+        <h1 className="text-3xl font-bold">NFT Marketplace - My Collection</h1>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
