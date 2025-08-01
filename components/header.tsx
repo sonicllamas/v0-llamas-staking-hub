@@ -28,7 +28,7 @@ export function Header() {
   const navigationItems = [
     { name: "Home", href: "/" },
     { name: "Verified NFTs", href: "/verified-nfts" },
-    { name: "My NFTs", href: "/my-nfts" },
+    { name: "NFT Marketplace", href: "/nft-marketplace" },
     { name: "My Contracts", href: "/my-contracts" },
     { name: "Create Staking", href: "/create-staking" },
   ]
